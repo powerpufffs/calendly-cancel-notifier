@@ -1,6 +1,7 @@
-import React from "react"
+import React, { useState } from "react"
 import styled from "@emotion/styled"
 import { Col } from "boostly-ui2"
+import axios from "axios"
 
 const Container = styled.div`
   min-height: 100vh;
@@ -18,7 +19,7 @@ const Button = styled.div`
   align-items: center;
   text-align: center;
   &:hover {
-	background: lightgray;
+    background: lightgray;
   }
 `
 const days = [
@@ -29,16 +30,42 @@ const days = [
   "Friday",
   "Saturday",
 ]
-const index = () => {
+const subscribeURL = `http://localhost:9000/subscribe`
+const Index = () => {
+  const [phone, setPhone] = useState("")
+  const handleClick = async day => {
+    let prevMonday = new Date()
+    if (prevMonday.getDay() !== 1) {
+      prevMonday.setDate(prevMonday.getDate() - ((prevMonday.getDay() + 6) % 7))
+    }
+    prevMonday.setDate(prevMonday.getDate() + day)
+
+    console.log(prevMonday)
+    try {
+      await axios.post(subscribeURL, {
+        phone: phone,
+        days: [prevMonday],
+      })
+      console.log("successful!")
+    } catch (e) {}
+  }
   return (
     <Container>
       <Col space="evenly">
-        {days.map(el => (
-          <Button>{el}</Button>
+        <input
+          onChange={e => {
+            setPhone(e.target.value)
+          }}
+          name="phone"
+          type="text"
+          placeholder="Your number"
+        />
+        {days.map((day, i) => (
+          <Button onClick={() => handleClick(i)}>{day}</Button>
         ))}
       </Col>
     </Container>
   )
 }
 
-export default index
+export default Index
