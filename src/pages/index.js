@@ -1,12 +1,14 @@
+/**@jsx jsx*/
 import React, { useState, useEffect } from "react"
 import styled from "@emotion/styled"
+import { css, jsx} from "@emotion/core"
 import { Col } from "boostly-ui2"
 import axios from "axios"
 import { ServerURL } from "../utils/urls"
 
 const Container = styled.div`
   min-height: 100vh;
-  width: 100%;
+  max-width: 100%;
   display: flex;
   justify-content: center;
   font-family: sans-serif;
@@ -81,7 +83,14 @@ const Index = () => {
   }
   return (
     <Container>
-      <Col x space="evenly" width="60%">
+      <Col
+        x
+        space="evenly"
+        css={css`
+          width: 90%;
+          max-width: 450px;
+        `}
+      >
         <Logo src="https://instagram.faus1-1.fna.fbcdn.net/v/t51.2885-19/s150x150/66823378_755040478284572_2772656175617933312_n.jpg?_nc_ht=instagram.faus1-1.fna.fbcdn.net&_nc_ohc=XM4Y2WXIbUYAX_5b5PI&oh=1e742897b6756caa3d7bfa2c553a69ea&oe=5ED32C6B" />
         <Input
           onChange={handleChange}
