@@ -1,7 +1,7 @@
 /**@jsx jsx*/
 import React, { useState, useEffect } from "react"
 import styled from "@emotion/styled"
-import { css, jsx} from "@emotion/core"
+import { css, jsx } from "@emotion/core"
 import { Col } from "boostly-ui2"
 import axios from "axios"
 import { ServerURL } from "../utils/urls"
@@ -13,22 +13,27 @@ const Container = styled.div`
   justify-content: center;
   font-family: sans-serif;
 `
+// const Button = styled.div`
+//   border-radius: 12px;
+//   align-self: stretch;
+//   /* border: solid 1px black; */
+//   padding: 20px 12px;
+//   box-shadow: 0 8px 24px hsla(0, 0%, 0%, 0.2), 0 5px 6px hsla(0, 0%, 0%, 0.1);
+//   justify-content: center;
+//   align-items: center;
+//   text-align: center;
+//   transition: 0.5s;
+//   &:hover {
+//     transform: translateY(-5px);
+//     transform: scale(1.01px);
+//     box-shadow: 0 12px 24px hsla(0, 0%, 0%, 0.2),
+//       0 8px 15px hsla(0, 0%, 0%, 0.1);
+//   }
+// `
+
 const Button = styled.div`
-  border-radius: 12px;
-  align-self: stretch;
-  /* border: solid 1px black; */
-  padding: 20px 12px;
-  box-shadow: 0 8px 24px hsla(0, 0%, 0%, 0.2), 0 5px 6px hsla(0, 0%, 0%, 0.1);
-  justify-content: center;
-  align-items: center;
-  text-align: center;
-  transition: 0.5s;
-  &:hover {
-    transform: translateY(-5px);
-    transform: scale(1.01px);
-    box-shadow: 0 12px 24px hsla(0, 0%, 0%, 0.2),
-      0 8px 15px hsla(0, 0%, 0%, 0.1);
-  }
+  border-top: 1px solid black;
+  padding: 12px 8px;
 `
 const Input = styled.input`
   text-align: center;
@@ -50,27 +55,63 @@ const days = [
   "Friday",
   "Saturday",
 ]
+
+const DayToggle = ({ day, ...props }) => {
+  return (
+    <div
+      css={css`
+        align-self: stretch;
+        display: flex;
+        justify-content: flex-start;
+      `}
+      {...props}
+    >
+      <input
+        type="checkbox"
+        id={day}
+        name={`checkbox`}
+        // css={css`
+        //   position: absolute;
+        //   top: -100%;
+        // `}
+      />
+      <label htmlFor={day}>
+        {day}
+      </label>
+    </div>
+  )
+}
 const subscribeURL = `${ServerURL}/subscribe`
+
 const Index = () => {
   const [phone, setPhone] = useState("")
-  const handleClick = async day => {
-    let prevMonday = new Date()
-    if (prevMonday.getDay() !== 1) {
-      prevMonday.setDate(prevMonday.getDate() - ((prevMonday.getDay() + 6) % 7))
-    }
-    prevMonday.setDate(prevMonday.getDate() + day)
-
-    try {
-      await axios.post(subscribeURL, {
-        phone: phone.normal,
-        days: [prevMonday],
-      })
-      window.alert("Subscribed!")
-    } catch (e) {}
-  }
+  const [dates, setDates] = useState([])
   useEffect(() => {
-    console.log(phone)
-  }, [phone])
+    let today = new Date()
+    const start = today.getDay() - 1
+    setDates(
+      Array(6)
+        .fill()
+        .map((e, i) => {
+          return days[(i + start) % days.length]
+        })
+    )
+  }, [])
+
+  const handleSubmit = async e => {
+    e.preventDefault()
+    const { phone, checkbox } = e.target.elements
+    console.log(checkbox)
+    let today = new Date()
+
+    // try {
+    //   await axios.post(subscribeURL, {
+    //     phone: phone.replace(/\D/g, ""),
+    //     days: [],
+    //   })
+    //   window.alert("Subscribed!")
+    // } catch (e) {}
+  }
 
   const handleChange = e => {
     let value = e.target.value.replace(/\D/g, "")
@@ -85,24 +126,28 @@ const Index = () => {
     <Container>
       <Col
         x
-        space="evenly"
+        space="flex-start"
         css={css`
           width: 90%;
           max-width: 450px;
         `}
       >
         <Logo src="https://instagram.faus1-1.fna.fbcdn.net/v/t51.2885-19/s150x150/66823378_755040478284572_2772656175617933312_n.jpg?_nc_ht=instagram.faus1-1.fna.fbcdn.net&_nc_ohc=XM4Y2WXIbUYAX_5b5PI&oh=1e742897b6756caa3d7bfa2c553a69ea&oe=5ED32C6B" />
-        <Input
-          onChange={handleChange}
-          name="phone"
-          type="text"
-          placeholder="(XXX) XXX - XXXX"
-        />
-        {days.map((day, i) => (
-          <Button key={day.key} onClick={() => handleClick(i)}>
-            {day}
-          </Button>
-        ))}
+        <form onSubmit={handleSubmit}>
+          <Input
+            onChange={handleChange}
+            name="phone"
+            type="text"
+            placeholder="(XXX) XXX - XXXX"
+            name="phone"
+            required
+          />
+          <h2>Choose which days you want to be notified for.</h2>
+          {dates.map((day, i) => (
+            <DayToggle day={day} key={i} />
+          ))}
+          <button>Notify me!</button>
+        </form>
       </Col>
     </Container>
   )
