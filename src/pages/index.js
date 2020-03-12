@@ -75,9 +75,7 @@ const DayToggle = ({ day, ...props }) => {
         //   top: -100%;
         // `}
       />
-      <label htmlFor={day}>
-        {day}
-      </label>
+      <label htmlFor={day}>{day}</label>
     </div>
   )
 }
@@ -101,8 +99,16 @@ const Index = () => {
   const handleSubmit = async e => {
     e.preventDefault()
     const { phone, checkbox } = e.target.elements
-    console.log(checkbox)
-    let today = new Date()
+    const today = new Date()
+    let subbedDays = []
+    checkbox.forEach((e, i) => {
+      if (e.checked) {
+        let date = new Date()
+        date.setDate(today.getDate() + i)
+        subbedDays.push(date)
+      }
+    })
+    console.log(subbedDays)
 
     // try {
     //   await axios.post(subscribeURL, {
@@ -121,6 +127,14 @@ const Index = () => {
   const formatter = text => {
     let x = text.match(/(\d{0,3})(\d{0,3})(\d{0,4})/)
     return !x[2] ? x[1] : "(" + x[1] + ") " + x[2] + (x[3] ? "-" + x[3] : "")
+  }
+  const generateDays = () => {
+    let i = 0
+    return dates.map(day => {
+      const element = <DayToggle day={day} key={i} />
+      i += day === "Saturday" ? 2 : 1
+      return element
+    })
   }
   return (
     <Container>
@@ -143,9 +157,7 @@ const Index = () => {
             required
           />
           <h2>Choose which days you want to be notified for.</h2>
-          {dates.map((day, i) => (
-            <DayToggle day={day} key={i} />
-          ))}
+          {generateDays()}
           <button>Notify me!</button>
         </form>
       </Col>
