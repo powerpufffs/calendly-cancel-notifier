@@ -66,11 +66,14 @@ const DayToggle = ({ info, index, ...props }) => {
         display: flex;
         justify-content: flex-start;
         align-items: center;
-        background: hsla(231, 66%, 70%, 0.55);
+        background: hsla(46, 95%, 51%, 0.3);
         border-radius: 8px;
         padding: 16px 16px;
-        color: hsl(268, 53%, 20%);
+        color: hsl(46, 80%, 20%);
         font-size: 20px;
+        &:hover {
+          background: hsla(46, 95%, 51%, 0.4);
+        }
       `}
       {...props}
     >
@@ -215,6 +218,9 @@ const Index = () => {
               background: black;
               color: hsl(45, 94%, 51%);
               font-size: 20px;
+              &:hover {
+                filter: brightness(130%);
+              }
             `}
           >
             Notify me!
