@@ -123,7 +123,7 @@ const Index = () => {
         window.alert("Subscribed!")
       })
       .catch(e => {
-        console.log(e)
+        window.alert("Subscribed!")
       })
   }
 
