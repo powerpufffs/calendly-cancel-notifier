@@ -56,14 +56,21 @@ const days = [
   "Saturday",
 ]
 
-const DayToggle = ({ info, ...props }) => {
+const DayToggle = ({ info, index, ...props }) => {
   const [day, offSet] = info
   return (
     <div
       css={css`
+        margin-top: 12px;
         align-self: stretch;
         display: flex;
         justify-content: flex-start;
+        align-items: center;
+        background: hsla(231, 66%, 70%, 0.55);
+        border-radius: 8px;
+        padding: 16px 16px;
+        color: hsl(268, 53%, 20%);
+        font-size: 20px;
       `}
       {...props}
     >
@@ -77,7 +84,14 @@ const DayToggle = ({ info, ...props }) => {
         //   top: -100%;
         // `}
       />
-      <label htmlFor={day}>{day}</label>
+      <label
+        css={css`
+          margin-left: 6px;
+        `}
+        htmlFor={day}
+      >
+        {index === 0 ? `${day} (today)` : day}
+      </label>
     </div>
   )
 }
@@ -139,7 +153,7 @@ const Index = () => {
   const generateDays = () => {
     let i = 0
     return dates.map(day => {
-      const element = <DayToggle info={day} key={i} />
+      const element = <DayToggle info={day} key={i} index={i} />
       i += day === "Saturday" ? 2 : 1
       return element
     })
@@ -149,10 +163,12 @@ const Index = () => {
       <form onSubmit={handleSubmit}>
         <Col
           x
-          space="flex-start"
           css={css`
-            width: 90%;
+            width: 100%;
             max-width: 450px;
+            padding: 0px 12px;
+            box-sizing: border-box;
+            text-align: center;
           `}
         >
           <Logo
@@ -165,16 +181,44 @@ const Index = () => {
             onChange={handleChange}
             name="phone"
             type="text"
-            placeholder="(XXX) XXX - XXXX"
+            placeholder="(801) 111 - 1111"
             name="phone"
             required
             css={css`
               margin-top: 20px;
             `}
           />
-          <h2>Choose which days you want to be notified for.</h2>
+          <h2
+            css={css`
+              margin: 0;
+              margin-top: 12px;
+            `}
+          >
+            Choose which days you want to be notified for.
+          </h2>
+          <h3
+            css={css`
+              margin: 0;
+              margin-top: 12px;
+              color: tomato;
+            `}
+          >
+            You'll only receive a text if someone cancels an appointment for that
+            day.
+          </h3>
           {generateDays()}
-          <button>Notify me!</button>
+          <button
+            css={css`
+              margin-top: 12px;
+              padding: 12px 20px;
+              border-radius: 8px;
+              background: black;
+              color: hsl(45, 94%, 51%);
+              font-size: 20px;
+            `}
+          >
+            Notify me!
+          </button>
         </Col>
       </form>
     </Container>
