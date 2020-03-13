@@ -56,7 +56,8 @@ const days = [
   "Saturday",
 ]
 
-const DayToggle = ({ day, ...props }) => {
+const DayToggle = ({ info, ...props }) => {
+  const [day, offSet] = info
   return (
     <div
       css={css`
@@ -70,6 +71,7 @@ const DayToggle = ({ day, ...props }) => {
         type="checkbox"
         id={day}
         name={`checkbox`}
+        value={offSet}
         // css={css`
         //   position: absolute;
         //   top: -100%;
@@ -87,36 +89,42 @@ const Index = () => {
   useEffect(() => {
     let today = new Date()
     const start = today.getDay() - 1
+    let dayDiff = 0
     setDates(
       Array(6)
         .fill()
         .map((e, i) => {
-          return days[(i + start) % days.length]
+          const day = days[(i + start) % days.length]
+          const ans = [day, dayDiff]
+          dayDiff += day === "Saturday" ? 2 : 1
+          return ans
         })
     )
   }, [])
 
-  const handleSubmit = async e => {
+  const handleSubmit = e => {
     e.preventDefault()
     const { phone, checkbox } = e.target.elements
-    const today = new Date()
     let subbedDays = []
-    checkbox.forEach((e, i) => {
+    checkbox.forEach(e => {
       if (e.checked) {
         let date = new Date()
-        date.setDate(today.getDate() + i)
+        date.setDate(date.getDate() + +e.value)
         subbedDays.push(date)
       }
     })
-    console.log(subbedDays)
 
-    // try {
-    //   await axios.post(subscribeURL, {
-    //     phone: phone.replace(/\D/g, ""),
-    //     days: [],
-    //   })
-    //   window.alert("Subscribed!")
-    // } catch (e) {}
+    axios
+      .post(subscribeURL, {
+        phone: phone.value.replace(/\D/g, ""),
+        days: subbedDays,
+      })
+      .then(() => {
+        window.alert("Subscribed!")
+      })
+      .catch(e => {
+        console.log(e)
+      })
   }
 
   const handleChange = e => {
@@ -131,23 +139,28 @@ const Index = () => {
   const generateDays = () => {
     let i = 0
     return dates.map(day => {
-      const element = <DayToggle day={day} key={i} />
+      const element = <DayToggle info={day} key={i} />
       i += day === "Saturday" ? 2 : 1
       return element
     })
   }
   return (
     <Container>
-      <Col
-        x
-        space="flex-start"
-        css={css`
-          width: 90%;
-          max-width: 450px;
-        `}
-      >
-        <Logo src="https://instagram.faus1-1.fna.fbcdn.net/v/t51.2885-19/s150x150/66823378_755040478284572_2772656175617933312_n.jpg?_nc_ht=instagram.faus1-1.fna.fbcdn.net&_nc_ohc=XM4Y2WXIbUYAX_5b5PI&oh=1e742897b6756caa3d7bfa2c553a69ea&oe=5ED32C6B" />
-        <form onSubmit={handleSubmit}>
+      <form onSubmit={handleSubmit}>
+        <Col
+          x
+          space="flex-start"
+          css={css`
+            width: 90%;
+            max-width: 450px;
+          `}
+        >
+          <Logo
+            css={css`
+              margin-top: 20px;
+            `}
+            src="https://instagram.faus1-1.fna.fbcdn.net/v/t51.2885-19/s150x150/66823378_755040478284572_2772656175617933312_n.jpg?_nc_ht=instagram.faus1-1.fna.fbcdn.net&_nc_ohc=XM4Y2WXIbUYAX_5b5PI&oh=1e742897b6756caa3d7bfa2c553a69ea&oe=5ED32C6B"
+          />
           <Input
             onChange={handleChange}
             name="phone"
@@ -155,12 +168,15 @@ const Index = () => {
             placeholder="(XXX) XXX - XXXX"
             name="phone"
             required
+            css={css`
+              margin-top: 20px;
+            `}
           />
           <h2>Choose which days you want to be notified for.</h2>
           {generateDays()}
           <button>Notify me!</button>
-        </form>
-      </Col>
+        </Col>
+      </form>
     </Container>
   )
 }
